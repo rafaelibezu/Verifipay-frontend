@@ -86,14 +86,6 @@ class _HomePageState extends State<HomePage> {
     await _refreshHome();
   }
 
-  void _openTransfer() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Verificacion por transferencia proximamente'),
-      ),
-    );
-  }
-
   void _openHistory() {
     Navigator.push(
       context,
@@ -346,15 +338,6 @@ class _HomePageState extends State<HomePage> {
                 asset: AppAssets.yapeLogo,
                 onTap: _openYape,
                 isPrimary: true,
-              ),
-
-              const SizedBox(height: 18),
-
-              _buildVerificationOption(
-                title: 'Transferencia',
-                subtitle: 'Verificar transferencia bancaria',
-                asset: AppAssets.transferLogo,
-                onTap: _openTransfer,
               ),
 
               const SizedBox(height: 32),
