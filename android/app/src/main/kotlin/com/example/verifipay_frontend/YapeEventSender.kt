@@ -237,11 +237,14 @@ class YapeEventSender(
 
         try {
 
-            val deviceToken =
-                BuildConfig
-                    .VERIFIPAY_DEVICE_TOKEN
+                val deviceToken =
+                    DeviceTokenStorage(
+                    appContext
+                ).getToken()
 
-            if (deviceToken.isBlank()) {
+                if (
+                    deviceToken.isNullOrBlank()
+                ) {
 
                 Log.e(
                     TAG,

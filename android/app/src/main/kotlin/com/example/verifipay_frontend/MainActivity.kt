@@ -16,14 +16,23 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(
         @NonNull flutterEngine: FlutterEngine
     ) {
-        super.configureFlutterEngine(flutterEngine)
+
+        super.configureFlutterEngine(
+            flutterEngine
+        )
 
         MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
+            flutterEngine
+                .dartExecutor
+                .binaryMessenger,
             CHANNEL
-        ).setMethodCallHandler { call, result ->
+        ).setMethodCallHandler {
+            call,
+            result ->
 
-            when (call.method) {
+            when (
+                call.method
+            ) {
 
                 "openNotificationSettings" -> {
 
@@ -32,23 +41,99 @@ class MainActivity : FlutterActivity() {
                             Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
                         )
 
-                    startActivity(intent)
+                    startActivity(
+                        intent
+                    )
 
-                    result.success(true)
+                    result.success(
+                        true
+                    )
                 }
 
                 "isNotificationAccessGranted" -> {
 
                     val enabledPackages =
                         NotificationManagerCompat
-                            .getEnabledListenerPackages(this)
+                            .getEnabledListenerPackages(
+                                this
+                            )
 
                     result.success(
-                        enabledPackages.contains(packageName)
+                        enabledPackages.contains(
+                            packageName
+                        )
+                    )
+                }
+
+                "saveDeviceToken" -> {
+
+                    val token =
+                        call.argument<String>(
+                            "token"
+                        )
+
+                    if (
+                        token.isNullOrBlank()
+                    ) {
+
+                        result.error(
+                            "INVALID_TOKEN",
+                            "El token no puede estar vacío",
+                            null
+                        )
+
+                        return@setMethodCallHandler
+                    }
+
+                    try {
+
+                        DeviceTokenStorage(
+                            applicationContext
+                        ).saveToken(
+                            token
+                        )
+
+                        result.success(
+                            true
+                        )
+
+                    } catch (
+                        exception: Exception
+                    ) {
+
+                        result.error(
+                            "TOKEN_SAVE_ERROR",
+                            exception.message,
+                            null
+                        )
+                    }
+                }
+
+                "hasDeviceToken" -> {
+
+                    val hasToken =
+                        DeviceTokenStorage(
+                            applicationContext
+                        ).hasToken()
+
+                    result.success(
+                        hasToken
+                    )
+                }
+
+                "clearDeviceToken" -> {
+
+                    DeviceTokenStorage(
+                        applicationContext
+                    ).clearToken()
+
+                    result.success(
+                        true
                     )
                 }
 
                 else -> {
+
                     result.notImplemented()
                 }
             }
