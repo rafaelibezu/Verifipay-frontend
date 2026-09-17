@@ -24,7 +24,6 @@ class MainActivity : FlutterActivity() {
         ).setMethodCallHandler { call, result ->
 
             when (call.method) {
-
                 "openNotificationSettings" -> {
                     val intent = Intent(
                         Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
@@ -43,6 +42,15 @@ class MainActivity : FlutterActivity() {
                     result.success(
                         enabledPackages.contains(packageName)
                     )
+                }
+
+                "getPendingYapeEventCount" -> {
+                    val count =
+                        YapeQueueDbHelper(
+                            applicationContext
+                        ).countPending()
+
+                    result.success(count)
                 }
 
                 else -> {

@@ -33,7 +33,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _loadHistory();
+    _refreshHome();
+  }
+
+  Future<void> _refreshHome() async {
+    await _loadHistory();
   }
 
   Future<void> _logout() async {
@@ -79,7 +83,7 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(builder: (_) => const YapeVerificationPage()),
     );
 
-    await _loadHistory();
+    await _refreshHome();
   }
 
   void _openTransfer() {
@@ -206,7 +210,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: _buildBottomNavigation(),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: _loadHistory,
+          onRefresh: _refreshHome,
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
