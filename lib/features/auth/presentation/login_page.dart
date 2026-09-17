@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          const Spacer(),
+                          SizedBox(height: constraints.maxHeight * 0.18),
                           const Padding(
                             padding: EdgeInsets.only(bottom: 28),
                             child: Text(
