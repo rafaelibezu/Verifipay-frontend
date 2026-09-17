@@ -5,7 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../models/login_request.dart';
 import '../services/auth_service.dart';
 import '../services/token_storage.dart';
-import 'home_page.dart';
+import 'auth_gate.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -51,14 +51,16 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => HomePage(user: response.user)),
+        MaterialPageRoute(builder: (_) => const AuthGate()),
+        (route) => false,
       );
     } catch (e) {
       if (!mounted) return;
 
       final message = e.toString().replaceFirst('Exception: ', '');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.error),
       );

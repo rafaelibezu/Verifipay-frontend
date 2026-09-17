@@ -7,6 +7,9 @@ import '../services/auth_service.dart';
 import 'home_page.dart';
 import 'login_page.dart';
 
+import '../../notification/presentation/notification_access_page.dart';
+import '../../notification/services/notification_permission_service.dart';
+
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -16,6 +19,10 @@ class AuthGate extends StatefulWidget {
 
 class _AuthGateState extends State<AuthGate> {
   final AuthService _authService = AuthService();
+  final NotificationPermissionService _notificationPermissionService =
+      NotificationPermissionService();
+
+  bool _notificationGranted = false;
 
   bool _loading = true;
   AuthUser? _user;
@@ -33,8 +40,26 @@ class _AuthGateState extends State<AuthGate> {
       return;
     }
 
+    if (user == null) {
+      setState(() {
+        _user = null;
+        _notificationGranted = false;
+        _loading = false;
+      });
+
+      return;
+    }
+
+    final notificationGranted = await _notificationPermissionService
+        .isGranted();
+
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       _user = user;
+      _notificationGranted = notificationGranted;
       _loading = false;
     });
   }
@@ -46,6 +71,16 @@ class _AuthGateState extends State<AuthGate> {
     }
 
     if (_user != null) {
+      if (!_notificationGranted) {
+        return NotificationAccessPage(
+          onGranted: () {
+            setState(() {
+              _notificationGranted = true;
+            });
+          },
+        );
+      }
+
       return HomePage(user: _user!);
     }
 
