@@ -10,6 +10,7 @@ import '../../verification/presentation/verification_history_page.dart';
 
 import '../services/auth_service.dart';
 import 'login_page.dart';
+import '../../notification/presentation/receiver_setup_page.dart';
 
 class HomePage extends StatefulWidget {
   final AuthUser user;
@@ -155,6 +156,35 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 const SizedBox(height: 18),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(
+                    Icons.phone_android_rounded,
+                    color: AppColors.primary,
+                  ),
+                  title: const Text(
+                    'Configurar receptor Yape',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.textSecondary,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ReceiverSetupPage(),
+                      ),
+                    );
+                  },
+                ),
+
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
