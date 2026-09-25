@@ -3,7 +3,7 @@ class AuthUser {
   final String name;
   final String email;
   final String role;
-  final int companyId;
+  final int? companyId;
   final int? branchId;
 
   const AuthUser({
@@ -15,9 +15,7 @@ class AuthUser {
     this.branchId,
   });
 
-  factory AuthUser.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory AuthUser.fromJson(Map<String, dynamic> json) {
     return AuthUser(
       id: json['id'],
       name: json['name'],

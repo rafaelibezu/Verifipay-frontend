@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_assets.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/login_request.dart';
 import '../services/auth_service.dart';
-import '../services/token_storage.dart';
 import 'auth_gate.dart';
 
 class LoginPage extends StatefulWidget {
@@ -19,7 +19,6 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
-  final TokenStorage _tokenStorage = TokenStorage();
 
   bool _loading = false;
   bool _obscurePassword = true;
@@ -40,14 +39,12 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _loading = true);
 
     try {
-      final response = await _authService.login(
+      await _authService.login(
         LoginRequest(
           email: _emailController.text.trim(),
           password: _passwordController.text,
         ),
       );
-
-      await _tokenStorage.saveToken(response.accessToken);
 
       if (!mounted) return;
 
@@ -56,13 +53,20 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(builder: (_) => const AuthGate()),
         (route) => false,
       );
-    } catch (e) {
+    } on ApiException catch (e) {
       if (!mounted) return;
 
-      final message = e.toString().replaceFirst('Exception: ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message), backgroundColor: AppColors.error),
+      );
+    } catch (_) {
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('No se pudo iniciar sesion.'),
+          backgroundColor: AppColors.error,
+        ),
       );
     } finally {
       if (mounted) {
