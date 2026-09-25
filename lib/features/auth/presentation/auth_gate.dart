@@ -6,8 +6,8 @@ import '../../../core/theme/app_colors.dart';
 import '../models/auth_user.dart';
 import '../services/auth_service.dart';
 
-import 'home_page.dart';
 import 'login_page.dart';
+import 'role_home_page.dart';
 
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -62,7 +62,7 @@ class _AuthGateState extends State<AuthGate> {
       return const LoginPage();
     }
 
-    return HomePage(user: _user!);
+    return RoleHomePage(user: _user!);
   }
 }
 

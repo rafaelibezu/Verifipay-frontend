@@ -15,4 +15,6 @@ class ApiConstants {
   static const String me = '$baseUrl/auth/me';
 
   static const String verifications = '$baseUrl/verifications';
+
+  static const String paymentRequests = '$baseUrl/payment-requests';
 }
