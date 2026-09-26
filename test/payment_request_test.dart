@@ -15,6 +15,8 @@ import 'package:verifipay_frontend/features/payment_request/presentation/cashier
 import 'package:verifipay_frontend/features/payment_request/presentation/new_payment_request_page.dart';
 import 'package:verifipay_frontend/features/payment_request/services/payment_request_service.dart';
 import 'package:verifipay_frontend/features/platform_admin/presentation/platform_admin_mobile_home_page.dart';
+import 'package:verifipay_frontend/features/receiver_device/models/receiver_device.dart';
+import 'package:verifipay_frontend/features/receiver_device/services/receiver_device_service.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -101,6 +103,68 @@ void main() {
     expect((await service.cancel(10)).status, PaymentRequestStatus.cancelled);
   });
 
+  test(
+    'ReceiverDeviceService crea y desactiva con contrato owner real',
+    () async {
+      final service = ReceiverDeviceService(
+        apiClient: ApiClient(
+          httpClient: MockClient((request) async {
+            expect(request.headers['Authorization'], 'Bearer access-1');
+
+            if (request.method == 'POST' &&
+                request.url.toString() == ApiConstants.ownerReceiverDevices) {
+              final body = jsonDecode(request.body) as Map<String, dynamic>;
+              expect(body, {'branchId': 7, 'name': 'Receptor principal'});
+              return http.Response(
+                _apiResponse({
+                  'id': 99,
+                  'name': 'Receptor principal',
+                  'branchId': 7,
+                  'branchName': 'Sucursal Test',
+                  'deviceToken': 'runtime-token',
+                }),
+                200,
+              );
+            }
+
+            if (request.method == 'PATCH' &&
+                request.url.toString() ==
+                    '${ApiConstants.ownerReceiverDevices}/99/status') {
+              return http.Response(_apiResponse(null), 200);
+            }
+
+            return http.Response(_apiResponse(null), 404);
+          }),
+        ),
+      );
+
+      final receiver = await service.create(
+        branchId: 7,
+        name: 'Receptor principal',
+      );
+
+      expect(receiver.id, 99);
+      expect(receiver.branchName, 'Sucursal Test');
+      expect(receiver.deviceToken, 'runtime-token');
+
+      await service.deactivate(99);
+    },
+  );
+
+  test('ReceiverDevice parsea respuesta con token runtime', () {
+    final receiver = ReceiverDevice.fromJson({
+      'id': 99,
+      'name': 'Receptor principal',
+      'branchId': 7,
+      'branchName': 'Sucursal Test',
+      'deviceToken': 'runtime-token',
+    });
+
+    expect(receiver.id, 99);
+    expect(receiver.name, 'Receptor principal');
+    expect(receiver.branchId, 7);
+  });
+
   testWidgets('RoleHomePage enruta CASHIER, OWNER y PLATFORM_ADMIN', (
     tester,
   ) async {
@@ -108,11 +172,13 @@ void main() {
       MaterialApp(home: RoleHomePage(user: _user('CASHIER'))),
     );
     expect(find.byType(CashierHomePage), findsOneWidget);
+    expect(find.text('Receiver Device'), findsNothing);
 
     await tester.pumpWidget(
       MaterialApp(home: RoleHomePage(user: _user('OWNER'))),
     );
     expect(find.byType(OwnerHomePage), findsOneWidget);
+    expect(find.text('Receiver Device'), findsOneWidget);
 
     await tester.pumpWidget(
       MaterialApp(home: RoleHomePage(user: _user('PLATFORM_ADMIN'))),

@@ -17,16 +17,10 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-val verifipayDeviceToken =
-    localProperties.getProperty(
-        "VERIFIPAY_DEVICE_TOKEN",
-        ""
-    )
-
 val verifipayApiUrl =
     localProperties.getProperty(
         "VERIFIPAY_API_URL",
-        "http://127.0.0.1:8080"
+        "http://10.0.2.2:8080"
     )
 
 android {
@@ -51,12 +45,6 @@ android {
 
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-        buildConfigField(
-            "String",
-            "VERIFIPAY_DEVICE_TOKEN",
-            "\"$verifipayDeviceToken\""
-        )
 
         buildConfigField(
             "String",
@@ -85,4 +73,5 @@ flutter {
 
 dependencies {
     implementation("androidx.work:work-runtime:2.10.1")
+    testImplementation("junit:junit:4.13.2")
 }

@@ -61,7 +61,7 @@ class YapeEventSender(
 
         Log.d(
             TAG,
-            "Evento guardado localmente: ${event.sourceEventId}"
+            "Evento guardado localmente"
         )
 
         /*
@@ -346,29 +346,9 @@ class YapeEventSender(
             val statusCode =
                 connection.responseCode
 
-            val responseStream =
-                if (
-                    statusCode in 200..299
-                ) {
-                    connection.inputStream
-                } else {
-                    connection.errorStream
-                }
-
-            val responseBody =
-                responseStream
-                    ?.bufferedReader()
-                    ?.use {
-                        it.readText()
-                    }
-
             Log.d(
                 TAG,
-                """
-                Backend response:
-                status=$statusCode
-                body=$responseBody
-                """.trimIndent()
+                "Backend respondio status=$statusCode"
             )
 
             /*
@@ -388,7 +368,7 @@ class YapeEventSender(
 
                 Log.d(
                     TAG,
-                    "Evento confirmado: ${event.sourceEventId}"
+                    "Evento confirmado"
                 )
 
                 return true
@@ -410,7 +390,7 @@ class YapeEventSender(
 
             Log.e(
                 TAG,
-                "Backend no disponible. Evento queda PENDING: ${event.sourceEventId}"
+                "Backend no disponible. Evento queda pendiente"
             )
 
             return false

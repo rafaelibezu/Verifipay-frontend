@@ -2,6 +2,24 @@
 
 A new Flutter project.
 
+## VerifiPay local API URL
+
+Flutter uses `VERIFIPAY_API_BASE_URL` and Android native uses
+`VERIFIPAY_API_URL`.
+
+For Android emulator local backend:
+
+```powershell
+flutter run --dart-define=VERIFIPAY_API_BASE_URL=http://10.0.2.2:8080/api/v1
+```
+
+Native Yape sender defaults to `http://10.0.2.2:8080` and appends `/api/v1`.
+To override it, add this non-secret value to `android/local.properties`:
+
+```properties
+VERIFIPAY_API_URL=http://10.0.2.2:8080
+```
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

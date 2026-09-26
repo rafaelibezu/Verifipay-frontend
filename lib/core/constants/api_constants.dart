@@ -17,4 +17,8 @@ class ApiConstants {
   static const String verifications = '$baseUrl/verifications';
 
   static const String paymentRequests = '$baseUrl/payment-requests';
+
+  static const String ownerBranches = '$baseUrl/owner/branches';
+
+  static const String ownerReceiverDevices = '$baseUrl/owner/receiver-devices';
 }

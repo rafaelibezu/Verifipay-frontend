@@ -132,6 +132,18 @@ class MainActivity : FlutterActivity() {
                     )
                 }
 
+                "getPendingYapeEventCount" -> {
+
+                    val count =
+                        YapeQueueDbHelper(
+                            applicationContext
+                        ).countPending()
+
+                    result.success(
+                        count
+                    )
+                }
+
                 else -> {
 
                     result.notImplemented()

@@ -33,6 +33,19 @@ class ApiClient {
     );
   }
 
+  Future<dynamic> patch(
+    String url, {
+    Map<String, dynamic>? body,
+    bool authenticated = false,
+  }) {
+    return _send(
+      method: 'PATCH',
+      url: url,
+      body: body,
+      authenticated: authenticated,
+    );
+  }
+
   Future<dynamic> _send({
     required String method,
     required String url,
@@ -119,21 +132,27 @@ class ApiClient {
     return switch (method) {
       'GET' => _httpClient.get(uri, headers: headers),
       'POST' => _httpClient.post(uri, headers: headers, body: encodedBody),
+      'PATCH' => _httpClient.patch(uri, headers: headers, body: encodedBody),
       _ => throw UnsupportedError('Metodo HTTP no soportado: $method'),
     };
   }
 
   dynamic _decodeResponse(http.Response response) {
-    final decoded = response.body.trim().isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
-
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      var decoded = <String, dynamic>{};
+      if (response.body.trim().isNotEmpty) {
+        try {
+          decoded = jsonDecode(response.body) as Map<String, dynamic>;
+        } on FormatException {
+          // Keep the HTTP status available even if an error body is not JSON.
+        }
+      }
       final message =
           decoded['message'] ?? 'No se pudo completar la solicitud.';
 
       throw ApiException(
         message,
+        statusCode: response.statusCode,
         type: response.statusCode == 401
             ? ApiErrorType.sessionExpired
             : response.statusCode == 400 || response.statusCode == 403
@@ -141,6 +160,10 @@ class ApiClient {
             : ApiErrorType.backend,
       );
     }
+
+    final decoded = response.body.trim().isEmpty
+        ? <String, dynamic>{}
+        : jsonDecode(response.body) as Map<String, dynamic>;
 
     return decoded['data'];
   }
